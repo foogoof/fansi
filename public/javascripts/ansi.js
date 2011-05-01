@@ -1,8 +1,12 @@
+var util = {};
+
+////////////////////////////////////////////////////////////////////////////////
+
 var chars = {
     escape: '\u001b'
 };
 
-var util = {};
+////////////////////////////////////////////////////////////////////////////////
 
 // http://en.wikipedia.org/wiki/ANSI_escape_code
 util.raw_sequences = {
@@ -22,6 +26,35 @@ util.raw_sequences = {
     'm': { params: {n:0, ks:[]}, acronym: 'SGR', name: 'Select Graphic Rendition' }
 };
 
+////////////////////////////////////////////////////////////////////////////////
+
+util.take_first_number = function(a, b) {
+    var val = Number(a);
+    if (!isNaN(val))
+        return val;
+    return Number(b);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+var Sequence = function(opcode, params) {
+    var defaults = util.raw_sequences[opcode];
+    if (!defaults) {
+        throw new Exception("Unexpected opcode: " + opcode);
+    }
+
+    this.acronym = defaults.acronym;
+    this.name = defaults.name;
+    this.opcode = opcode;
+
+    if (defaults.params) {
+        this.n = util.take_first_number(params[0], defaults.n);
+        this.m = util.take_first_number(params[1], defaults.m);
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
 util.starts_sequence = function(octets) {
     if (!(octets && octets.length > 2)) {
         return false;
@@ -29,13 +62,28 @@ util.starts_sequence = function(octets) {
         return false;
     }
     return true;
-}
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+util.make_sequence = function(opcode, params) {
+    var vals = util.raw_sequences[opcode];
+    var seq;
+    
+    if (vals) {
+        
+    }
+
+    return seq;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 
 util.tokenize_sequence = function(octets, position) {
     var ret = { sequence: null, octets_consumed: 0 };
     
     if (util.starts_sequence(octets)) {
-        var params = [];
+        var opcode, params = [];
         
         if (!position) position = 0;
         position += (ret.octets_consumed = 2);
@@ -48,14 +96,14 @@ util.tokenize_sequence = function(octets, position) {
             if (!isNaN(digit)) { issemi = (chr === ';'); }
             if (isNaN(digit) || !issemi) { isseq = !!util.raw_sequences[chr]; }
 
-            console.log([chr, digit, issemi, isseq]);
+            //console.log([chr, digit, issemi, isseq]);
             
             if (!isNaN(digit)) {
                 params.push(digit);
             } else if (issemi) {
                 // noop
             } else if (isseq) {
-                ret.sequence = util.raw_sequences[chr].name;
+                ret.sequence = new Sequence(chr, params);
             } else {
                 break;
             }

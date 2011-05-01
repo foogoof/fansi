@@ -4,26 +4,6 @@ var vows = require('vows'),
 
 var suite = vows.describe('ansi');
 
-// var context = {
-//     topic: '\u001b',
-//     'escape': function(topic) {
-//         assert.equal(ansi.chars.escape, topic);
-//     }
-// };
-
-// suite.addBatch({'chars': context});
-
-// var cursor_position = {
-//     'cursor_position': {
-//         topic: '\u001b[H',
-//         'toString': function(exp) {
-//             assert.equal(exp, ansi.sequences.cursor_position.toString());
-//         }
-//     }
-// };
-
-// suite.addBatch(cursor_position);
-
 var batch_util = {
     'utility functions': {
         'starts_sequence' : {
@@ -41,6 +21,12 @@ var batch_util = {
             }
         },
 
+        'take_first_number': {
+            'groks undefined': function() {
+                assert.ok(isNaN(ansi.util.take_first_number()));
+            }
+        },
+
         'tokenize_sequence': {
             'groks undefined': function() {
                 var ret = ansi.util.tokenize_sequence();
@@ -54,8 +40,10 @@ var batch_util = {
             },
             'handles a simple CUU': function() {
                 var ret = ansi.util.tokenize_sequence('\u001b[0A');
-                assert.equal(ret.sequence, 'Cursor Up');
+                assert.equal(ret.sequence.opcode, 'A');
+                assert.equal(ret.sequence.name, 'Cursor Up');
                 assert.equal(ret.octets_consumed, 4);
+                assert.equal(ret.sequence.n, 0);
             }
         }
     }
