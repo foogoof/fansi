@@ -32,22 +32,25 @@ util.starts_sequence = function(octets) {
 }
 
 util.tokenize_sequence = function(octets, position) {
-    var ret = { sequence: nil, octets_consumed: 0 };
+    var ret = { sequence: null, octets_consumed: 0 };
     
-    if (starts_sequence(octets)) {
+    if (util.starts_sequence(octets)) {
         var params = [];
         
-        ret.octets_consumed += 2;
+        if (!position) position = 0;
+        position += (ret.octets_consumed = 2);
         
-        for (var i = position; i < octets.length; i++, ret.octets_consumed++) {
+        for (var i = position || 0; i < octets.length; i++, ret.octets_consumed++) {
             var chr, digit, issemi, isseq;
 
             chr = octets[i];
             digit = Number(chr);
-            if (!digit) issemi = chr === ';';
-            if (!(digit || issemi)) isseq = !!util.raw_sequences[chr];
+            if (!isNaN(digit)) { issemi = (chr === ';'); }
+            if (isNaN(digit) || !issemi) { isseq = !!util.raw_sequences[chr]; }
+
+            console.log([chr, digit, issemi, isseq]);
             
-            if (digit) {
+            if (!isNaN(digit)) {
                 params.push(digit);
             } else if (issemi) {
                 // noop

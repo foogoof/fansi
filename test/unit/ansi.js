@@ -35,6 +35,27 @@ var batch_util = {
             },
             'rejects a truncated sequence': function() {
                 assert.ok(!ansi.util.starts_sequence('\u001b['));
+            },
+            'groks undefined': function() {
+                assert.ok(!ansi.util.starts_sequence());
+            }
+        },
+
+        'tokenize_sequence': {
+            'groks undefined': function() {
+                var ret = ansi.util.tokenize_sequence();
+                assert.ok(!ret.sequence);
+                assert.ok(ret.octets_consumed === 0);
+            },
+            'rejects crap': function() {
+                var ret = ansi.util.tokenize_sequence('abc');
+                assert.ok(!ret.sequence);
+                assert.ok(ret.octets_consumed === 0);
+            },
+            'handles a simple CUU': function() {
+                var ret = ansi.util.tokenize_sequence('\u001b[0A');
+                assert.equal(ret.sequence, 'Cursor Up');
+                assert.equal(ret.octets_consumed, 4);
             }
         }
     }
