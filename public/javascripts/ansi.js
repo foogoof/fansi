@@ -113,5 +113,8 @@ util.tokenize_sequence = function(octets, position) {
     return ret;
 };
 
-exports.util = util;
-exports.chars = chars;
+if (exports) {
+    exports.util = util;
+    exports.chars = chars;
+}
+
