@@ -40,7 +40,7 @@ util.take_first_number = function(a, b) {
 var Sequence = function(opcode, params) {
     var defaults = util.raw_sequences[opcode];
     if (!defaults) {
-        throw new Exception("Unexpected opcode: " + opcode);
+        throw new Error("Unexpected opcode: " + opcode);
     }
 
     this.acronym = defaults.acronym;
@@ -100,6 +100,8 @@ util.tokenize_sequence = function(octets, position) {
             raw_seq = util.raw_sequences[chr];
             if (raw_seq) {
                 ret.sequence = new Sequence(chr, params);
+            } else {
+                throw new Error("Couldn't understand :" + octets.substr(position, ret.octets_consumed));
             }
         }
     }

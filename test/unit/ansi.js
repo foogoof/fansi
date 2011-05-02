@@ -52,6 +52,10 @@ var batch_util = {
                 assert.equal(ret.octets_consumed, 7);
                 assert.equal(ret.sequence.n, 1);
                 assert.equal(ret.sequence.m, 66);
+            },
+            'pukes on unknown sequence': function() {
+                assert.throws(function() { ansi.util.tokenize_sequence('\u001b[['); },
+                              /Couldn't understand/);
             }
         }
     }
