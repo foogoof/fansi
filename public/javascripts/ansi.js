@@ -66,46 +66,40 @@ util.starts_sequence = function(octets) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-util.make_sequence = function(opcode, params) {
-    var vals = util.raw_sequences[opcode];
-    var seq;
-    
-    if (vals) {
-        
-    }
-
-    return seq;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
 util.tokenize_sequence = function(octets, position) {
     var ret = { sequence: null, octets_consumed: 0 };
-    
+
     if (util.starts_sequence(octets)) {
-        var opcode, params = [];
-        
+        var opcode, digits, params = [];
+
         if (!position) position = 0;
         position += (ret.octets_consumed = 2);
-        
+
         for (var i = position || 0; i < octets.length; i++, ret.octets_consumed++) {
-            var chr, digit, issemi, isseq;
+            var chr = octets[i],
+                digit = Number(chr),
+                raw_seq;
 
-            chr = octets[i];
-            digit = Number(chr);
-            if (!isNaN(digit)) { issemi = (chr === ';'); }
-            if (isNaN(digit) || !issemi) { isseq = !!util.raw_sequences[chr]; }
+            console.log([chr, digit]);
 
-            //console.log([chr, digit, issemi, isseq]);
-            
             if (!isNaN(digit)) {
-                params.push(digit);
-            } else if (issemi) {
-                // noop
-            } else if (isseq) {
+                if (digits === undefined) { digits = ''; }
+                digits += digit;
+                continue;
+            }
+
+            if (digits !== undefined) {
+                params.push(Number(digits));
+                digits = undefined;
+            }
+
+            if (chr === ';') {
+                continue;
+            }
+            
+            raw_seq = util.raw_sequences[chr];
+            if (raw_seq) {
                 ret.sequence = new Sequence(chr, params);
-            } else {
-                break;
             }
         }
     }
@@ -116,5 +110,6 @@ util.tokenize_sequence = function(octets, position) {
 if (exports) {
     exports.util = util;
     exports.chars = chars;
+    exports.Sequence = Sequence;
 }
 

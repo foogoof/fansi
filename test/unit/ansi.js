@@ -44,6 +44,14 @@ var batch_util = {
                 assert.equal(ret.sequence.name, 'Cursor Up');
                 assert.equal(ret.octets_consumed, 4);
                 assert.equal(ret.sequence.n, 0);
+            },
+            'handles a basic CUP': function() {
+                var ret = ansi.util.tokenize_sequence('\u001b[1;66H');
+                assert.equal(ret.sequence.opcode, 'H');
+                assert.equal(ret.sequence.name, 'Cursor Position');
+                assert.equal(ret.octets_consumed, 7);
+                assert.equal(ret.sequence.n, 1);
+                assert.equal(ret.sequence.m, 66);
             }
         }
     }
