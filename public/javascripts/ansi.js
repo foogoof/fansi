@@ -109,9 +109,15 @@ util.tokenize_sequence = function(octets, position) {
     return ret;
 };
 
-if (exports) {
-    exports.util = util;
-    exports.chars = chars;
-    exports.Sequence = Sequence;
+
+try {
+    _exp_target = exports;
+} catch (reference_error) {
+    // outside of of a node.js module this plays in the global scope
+    _exp_target = ansi = {};
 }
+
+_exp_target.util = util;
+_exp_target.chars = chars;
+_exp_target.Sequence = Sequence;
 
