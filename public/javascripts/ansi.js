@@ -96,12 +96,16 @@ util.tokenize_sequence = function(octets, position) {
             if (chr === ';') {
                 continue;
             }
+
+            if (chr === '?') {
+                continue; // WTH does this mean?
+            }
             
             raw_seq = util.raw_sequences[chr];
             if (raw_seq) {
                 ret.sequence = new Sequence(chr, params);
             } else {
-                throw new Error("Couldn't understand :" + octets.substr(position, ret.octets_consumed));
+                throw new Error("Couldn't understand :" + octets.substr(position || 0, ret.octets_consumed));
             }
         }
     }
