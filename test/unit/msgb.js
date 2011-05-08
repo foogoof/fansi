@@ -24,6 +24,13 @@ var match_params = function(expected) {
     };
 };
 
+var flat_data_tests = {
+    'friendly plain text data': {
+        topic: transmute('Raw Text', 'hello, world'),
+        'should be friendly': match_params(['hello, world'])
+    }
+}
+
 var cursor_down_tests = {
     'param specified with default value': {
         topic: transmute('Cursor Down', '\x1b[1B'),
@@ -62,7 +69,8 @@ var g1_special_char_tests = {
 };
 
 suite.addBatch({'Cursor Down': cursor_down_tests });
-suite.addBatch({'Cursor Up': cursor_up_tests });
-suite.addBatch({'use g1 special chars': g1_special_char_tests});
+// suite.addBatch({'Cursor Up': cursor_up_tests });
+// suite.addBatch({'use g1 special chars': g1_special_char_tests});
+suite.addBatch({'friendly data': flat_data_tests});
 
 suite.export(module);

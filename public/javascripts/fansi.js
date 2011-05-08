@@ -7,7 +7,7 @@ var read_code = function(val) {
     var event = undefined;
     var rows = undefined;
 
-    if (0 === val.indexOf('\u001b')) {
+    if (0 === val.indexOf('\x1b')) {
         if (1 === val.indexOf('[')) {
             if (val.match(/A$/) ) {
                 event = 'Cursor Up';
@@ -23,6 +23,9 @@ var read_code = function(val) {
         } else if (1 === val.indexOf(')')) {
             event = 'setspecg1';
         }
+    } else {
+        event = 'Raw Text';
+        rows = val;
     }
 
     if (event) {
