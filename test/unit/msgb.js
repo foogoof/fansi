@@ -54,7 +54,15 @@ var cursor_up_tests = {
     }
 };
 
+var g1_special_char_tests = {
+    'use it!': {
+        topic: transmute('setspecg1', '\u001b2930'),
+        'catch the message': match_params([])
+    }
+};
+
 suite.addBatch({'Cursor Down': cursor_down_tests });
 suite.addBatch({'Cursor Up': cursor_up_tests });
+suite.addBatch({'use g1 special chars': g1_special_char_tests});
 
 suite.export(module);

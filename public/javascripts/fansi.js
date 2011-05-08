@@ -7,19 +7,23 @@ var read_code = function(val) {
     var event = undefined;
     var rows = undefined;
 
-    if (val.match(/41$/) ) {
-        event = 'Cursor Up';
-    } else if (val.match(/42$/)) {
-        event = 'Cursor Down';
+    if (0 === val.indexOf('\u001b5b')) {
+        if (val.match(/41$/) ) {
+            event = 'Cursor Up';
+        } else if (val.match(/42$/)) {
+            event = 'Cursor Down';
+        }
+        
+        if (val.match(/5b(31)?4/)) {
+            rows = 1;
+        } else if (val.match(/5b32/)) {
+            rows = 2;
+        }
+    } else if (0 === val.indexOf('\u001b29')) {
+        event = 'setspecg1';
     }
 
-    if (val.match(/5b(31)?4/)) {
-        rows = 1;
-    } else if (val.match(/5b32/)) {
-        rows = 2;
-    }
-
-    if (event && rows) {
+    if (event) {
         this.emit(event, rows);
     }
 };
