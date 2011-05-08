@@ -1,13 +1,35 @@
 if (module) {
     var events = require('events');
     var util = require('util');
+    var _ = require('underscore');
+    var debug_inspect = _.compose(util.debug, util.inspect);
+}
+
+var read_all_codes = function(val) {
+    var remainder = val;
+    do {
+        remainder = this.read_code(remainder);
+        if (remainder) debug_inspect({remainder: remainder});
+    } while (remainder);
 }
 
 var read_code = function(val) {
     var event = undefined;
     var rows = undefined;
 
-    if (0 === val.indexOf('\x1b')) {
+    var next_escape = val.indexOf('\x1b');
+    var remainder = '';
+
+    if (-1 === next_escape) {
+        event = 'Raw Text';
+        rows = val;
+    }
+    else if (0 !== next_escape) {
+        event = 'Raw Text';
+        rows = val.substring(0, next_escape);
+        remainder = val.substring(next_escape, val.length);
+    }
+    else if (0 === next_escape) {
         if (1 === val.indexOf('[')) {
             if (val.match(/A$/) ) {
                 event = 'Cursor Up';
@@ -23,22 +45,27 @@ var read_code = function(val) {
         } else if (1 === val.indexOf(')')) {
             event = 'setspecg1';
         }
-    } else {
-        event = 'Raw Text';
-        rows = val;
     }
 
     if (event) {
         this.emit(event, rows);
     }
+
+    return remainder;
 };
 
-function machine_factory() {
-    // TODO: make less crappy
-    var machine = new events.EventEmitter();
-    machine.read = read_code;
-    return machine;
-};
+var Machine = (function() {
+                   util.inherits(Machine, events.EventEmitter);
+                   
+                   function Machine() {
+                   }
+                   
+                   Machine.prototype.read = read_all_codes;
+                   Machine.prototype.read_code = read_code;
+
+                   return Machine;
+               })();
+
 
 try {
     _exp_target = exports;
@@ -47,4 +74,5 @@ try {
     _exp_target = fansi = {};
 }
 
-_exp_target.machine = machine_factory();
+_exp_target.machine = new Machine();
+_exp_target.Machine = Machine;
