@@ -63,4 +63,15 @@ var batch_util = {
 
 suite.addBatch(batch_util);
 
+var streamBatch = {
+    'streaming': {
+        topic: function () { ansi.util.tokenize_sequence('\u001b[Ahello, world\u001b[H'); },
+        'sees first sequence': function () { return true; },
+        'sees data': function (topic) { return true; },
+        'sees second sequence': function () { return true; }
+    }
+};
+
+suite.addBatch(streamBatch);
+
 suite.export(module);

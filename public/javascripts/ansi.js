@@ -1,3 +1,8 @@
+if (module) {
+    var events = require('events');
+    var util = require('util');
+}
+
 var util = {};
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -9,7 +14,8 @@ var chars = {
 ////////////////////////////////////////////////////////////////////////////////
 
 // http://en.wikipedia.org/wiki/ANSI_escape_code
-util.raw_sequences = {
+// lsq = left square bracket = [
+var lsq_code_map = {
     'A': { params: {n:1}, acronym: 'CUU', name: 'Cursor Up' },
     'B': { params: {n:1}, acronym: 'CUD', name: 'Cursor Down' },
     'C': { params: {n:1}, acronym: 'CUF', name: 'Cursor Forward' },
@@ -26,19 +32,25 @@ util.raw_sequences = {
     'm': { params: {n:0, ks:[]}, acronym: 'SGR', name: 'Select Graphic Rendition' }
 };
 
-////////////////////////////////////////////////////////////////////////////////
+var rcp_code_map = {
+    
+};
 
-util.take_first_number = function(a, b) {
-    var val = Number(a);
-    if (!isNaN(val))
-        return val;
-    return Number(b);
-}
+var wtf_code_map = {
+    
+};
+
+var escape_sequence_type_maps = {
+    '[' : lsq_code_map,
+    ')' : rcp_code_map,
+    '7' : wtf_code_map,
+    '=' : wtf_code_map
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 
 var Sequence = function(opcode, params) {
-    var defaults = util.raw_sequences[opcode];
+    var defaults = code_map[opcode];
     if (!defaults) {
         throw new Error("Unexpected opcode: " + opcode);
     }
@@ -47,15 +59,33 @@ var Sequence = function(opcode, params) {
     this.name = defaults.name;
     this.opcode = opcode;
 
+    // TODO: puke when mandatory params are absent ('CHA')
     if (defaults.params) {
-        this.n = util.take_first_number(params[0], defaults.n);
-        this.m = util.take_first_number(params[1], defaults.m);
+        this.n = this.take_first_number(params[0], defaults.n);
+        this.m = this.take_first_number(params[1], defaults.m);
     }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 
-util.starts_sequence = function(octets) {
+Sequence.prototype.take_first_number = function(a, b) {
+    var val = Number(a);
+    if (!isNaN(val))
+        return val;
+    return Number(b);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+function SequenceStream() {
+    
+};
+
+util.inherits(SequenceStream, events.EventEmitter);
+
+////////////////////////////////////////////////////////////////////////////////
+
+SequenceStream.prototype.starts_sequence = function(octets) {
     if (!(octets && octets.length > 2)) {
         return false;
     } else if (!(octets[0] === chars.escape && octets[1] === '[')) {
@@ -66,18 +96,116 @@ util.starts_sequence = function(octets) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-util.tokenize_sequence = function(octets, position) {
-    var ret = { sequence: null, octets_consumed: 0 };
+function CheesyStream(data, offset) {
+    this.data = data;
+    this.pos = offset || 0;
+}
+
+CheesyStream.prototype.get = function() {
+    var chr = this.peek(0);
+    if (chr !== undefined) {
+        this.pos++;
+    }
+    return chr;
+};
+
+CheesyStream.prototype.unget = function() {
+    var chr = this.peek(-1);
+    if (chr !== undefined) {
+        this.pos--;
+    }
+    return chr;
+};
+
+CheesyStream.prototype.peek = function(offset) {
+    var idx = this.pos + (offset === undefined ? 0 : offset);
+    if (idx < 0 || (idx + 1) >= this.data.length) {
+        return undefined;
+    }
+    return this.data[idx];
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+SequenceStream.prototype.get_next_token = function(stream) {
+    var token = '';
+    var seq_type = ''; // control or data
+    var escape_suffix = '';
+    var done = false, rewind = false;
+
+    for (var i = position; i < data.length && !done; i++) {
+        var chr = stream.read();
+
+        // starting a control seq?
+        if (chr === '\u001b') {
+            // already doing something else?
+            if (seq_type !== '') {
+                done = rewind = true;
+            } else {
+                seq_type = 'control';
+            }
+        } else {
+            if (seq_type !== '') {
+                seq_type = 'data';
+            } else if (seq_type === 'data') {
+                // noop
+            }
+            else { // (seq_type === 'control')
+                if (token.length === 1) {
+                    escape_suffix = chr;
+                } else {
+                    if (escape_suffix === '[') {
+                        if (code_map[chr]) {
+                            done = true;
+                        }
+                    }
+                    // TODO else: check other code maps
+                }
+            }
+        }
+
+        if (!rewind) {
+            token += chr;
+        }
+    }
+        
+    if (rewind) {
+        stream.unget();
+    }
+    
+    return token;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+SequenceStream.prototype.foo = function (data) {
+    var token = '';
+    var state = ''; // command or data
+    
+    for (var i = 0; i < data.length; i++) {
+    }
+};
+
+SequenceStream.prototype.dispatch_sequences = function(octets) {
+    var opcode, digits, params = [];
+
+    if (!octets) {
+        // TODO: emit event?
+        return;
+    }
+
+    for (var i = 0; i < octets.length; i++) {
+        var chr = octets[i],
+            digit = Number(chr);
+        
+    }
 
     if (util.starts_sequence(octets)) {
-        var opcode, digits, params = [];
 
         if (!position) position = 0;
         position += (ret.octets_consumed = 2);
 
         for (var i = position || 0; i < octets.length; i++, ret.octets_consumed++) {
-            var chr = octets[i],
-                digit = Number(chr),
                 raw_seq;
 
             console.log([chr, digit]);
@@ -121,7 +249,7 @@ try {
     _exp_target = ansi = {};
 }
 
-_exp_target.util = util;
-_exp_target.chars = chars;
 _exp_target.Sequence = Sequence;
-
+_exp_target.SequenceStream = SequenceStream;
+_exp_target.chars = chars;
+_exp_target.code_map = code_map;
