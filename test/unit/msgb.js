@@ -26,37 +26,37 @@ var match_params = function(expected) {
 
 var cursor_down_tests = {
     'param specified with default value': {
-        topic: transmute('Cursor Down', '\u001b5b3142'),
+        topic: transmute('Cursor Down', '\x1b[1B'),
         'go down one line': match_params([1])
     },
     'param NOT specified': {
-        topic: transmute('Cursor Down', '\u001b5b42'),
+        topic: transmute('Cursor Down', '\x1b[B'),
         'default value is 1': match_params([1])
     },
     'param specified with custom value': {
-        topic: transmute('Cursor Down', '\u001b5b3242'),
+        topic: transmute('Cursor Down', '\x1b[2B'),
         'go down two lines': match_params([2])
     }
 };
 
 var cursor_up_tests = {
     'param specified with default value': {
-        topic: transmute('Cursor Up', '\u001b5b3141'),
+        topic: transmute('Cursor Up', '\x1b[1A'),
         'go up one line': match_params([1])
     },
     'param NOT specified': {
-        topic: transmute('Cursor Up', '\u001b5b41'),
+        topic: transmute('Cursor Up', '\x1b[A'),
         'default value is 1': match_params([1])
     },
     'param specified with custom value': {
-        topic: transmute('Cursor Up', '\u001b5b3241'),
+        topic: transmute('Cursor Up', '\x1b[2A'),
         'go up two lines': match_params([2])
     }
 };
 
 var g1_special_char_tests = {
     'use it!': {
-        topic: transmute('setspecg1', '\u001b2930'),
+        topic: transmute('setspecg1', '\x1b)0'),
         'catch the message': match_params([])
     }
 };
