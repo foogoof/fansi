@@ -4,16 +4,25 @@ if (module) {
 }
 
 var read_code = function(val) {
-    if (val == '\u001b5b3142')
-        this.emit('Cursor Down', 1);
-    else if (val == '\u001b5b42')
-        this.emit('Cursor Down', 1);
-    else if (val == '\u001b5b3242')
-        this.emit('Cursor Down', 2);
-    else
-        throw new Error("Wtf is val => " + val);
-    return 'wth';
-}
+    var event = undefined;
+    var rows = undefined;
+
+    if (val.match(/41$/) ) {
+        event = 'Cursor Up';
+    } else if (val.match(/42$/)) {
+        event = 'Cursor Down';
+    }
+
+    if (val.match(/5b(31)?4/)) {
+        rows = 1;
+    } else if (val.match(/5b32/)) {
+        rows = 2;
+    }
+
+    if (event && rows) {
+        this.emit(event, rows);
+    }
+};
 
 function machine_factory() {
     // TODO: make less crappy

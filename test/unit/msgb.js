@@ -39,6 +39,22 @@ var cursor_down_tests = {
     }
 };
 
+var cursor_up_tests = {
+    'param specified with default value': {
+        topic: transmute('Cursor Up', '\u001b5b3141'),
+        'go up one line': match_params([1])
+    },
+    'param NOT specified': {
+        topic: transmute('Cursor Up', '\u001b5b41'),
+        'default value is 1': match_params([1])
+    },
+    'param specified with custom value': {
+        topic: transmute('Cursor Up', '\u001b5b3241'),
+        'go up two lines': match_params([2])
+    }
+};
+
 suite.addBatch({'Cursor Down': cursor_down_tests });
+suite.addBatch({'Cursor Up': cursor_up_tests });
 
 suite.export(module);
