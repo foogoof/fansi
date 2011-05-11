@@ -1,17 +1,15 @@
-if (module) {
-    var events = require('events');
-    var util = require('util');
-    var _ = require('underscore');
-    var debug_inspect = _.compose(util.debug, util.inspect);
-}
+var events = require('events');
+var _ = require('underscore'),
+    util = require('util');
+var s = require('./s');
 
 var read_all_codes = function(val) {
     var remainder = val;
     do {
         remainder = this.read_code(remainder);
-        if (remainder) debug_inspect({remainder: remainder});
+        if (remainder) s.debug_inspect({remainder: remainder});
     } while (remainder);
-}
+};
 
 var read_code = function(val) {
     var event = undefined;
@@ -19,6 +17,7 @@ var read_code = function(val) {
 
     var next_escape = val.indexOf('\x1b');
     var remainder = '';
+    //s.debug_inspect({i_r:val, offset:next_escape});
 
     if (-1 === next_escape) {
         event = 'Raw Text';
@@ -27,7 +26,7 @@ var read_code = function(val) {
     else if (0 !== next_escape) {
         event = 'Raw Text';
         rows = val.substring(0, next_escape);
-        remainder = val.substring(next_escape, val.length);
+        remainder = val.slice(next_escape);
     }
     else if (0 === next_escape) {
         if (1 === val.indexOf('[')) {
@@ -47,6 +46,7 @@ var read_code = function(val) {
         }
     }
 
+    // s.debug_inspect({event:event, rows:rows});
     if (event) {
         this.emit(event, rows);
     }
