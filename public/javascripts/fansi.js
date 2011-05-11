@@ -7,7 +7,6 @@ var read_all_codes = function(val) {
     var remainder = val;
     do {
         remainder = this.read_code(remainder);
-        if (remainder) s.debug_inspect({remainder: remainder});
     } while (remainder);
 };
 
@@ -19,7 +18,6 @@ var read_code = function(val) {
 
     var next_escape = val.indexOf('\x1b');
     var remainder = '';
-    //s.debug_inspect({i_r:val, offset:next_escape});
 
     if (-1 === next_escape) {
         event = 'Raw Text';

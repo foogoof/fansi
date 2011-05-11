@@ -7,6 +7,8 @@ var vows = require('vows'),
 
 var suite = vows.describe('fansi');
 
+// TODO: check that results are received in order as their events
+// right now the event arguments are just a set, not a vector
 var transmute = function(value /* , event1...n */) {
     var events = _.rest(arguments);
     var results = [];
@@ -31,6 +33,7 @@ var transmute = function(value /* , event1...n */) {
     };
 }
 
+// TODO: work with var args instead of requiring a vector as an arg
 var match_params = function(expected) {
     return function(err, actual) {
         assert.equal(err, undefined);
@@ -53,6 +56,10 @@ var flat_data_tests = {
     'control then data': {
         topic: transmute('\x1b[2Aworld', 'Cursor Up', 'Raw Text'),
         'should be two lines': match_params([2, 'world'])
+    },
+    'data then control then data': {
+        topic: transmute('hello\x1b[Aworld', 'Raw Text', 'Cursor Up'),
+        'should be two lines': match_params(['hello',  1, 'world'])
     }
 }
 
