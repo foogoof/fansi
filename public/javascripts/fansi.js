@@ -14,6 +14,8 @@ var read_all_codes = function(val) {
 var read_code = function(val) {
     var event = undefined;
     var rows = undefined;
+    var code_len = undefined;
+    var digit = undefined;
 
     var next_escape = val.indexOf('\x1b');
     var remainder = '';
@@ -29,26 +31,40 @@ var read_code = function(val) {
         remainder = val.slice(next_escape);
     }
     else if (0 === next_escape) {
-        if (1 === val.indexOf('[')) {
-            if (val.match(/A$/) ) {
-                event = 'Cursor Up';
-            } else if (val.match(/B$/)) {
-                event = 'Cursor Down';
-            }
-        
-            if (val.match(/\[2/)) {
-                rows = 2;
-            } else if (val.match(/\[1/) || val.match(/\[[^\d]/)) {
+        code_len = 1;
+        if ('[' === val[code_len]) {
+            code_len++;
+
+            digit = Number(val[code_len]);
+            if (!isNaN(digit)) {
+                rows = digit;
+                code_len++;
+            } else {
                 rows = 1;
             }
+
+            if ('A' == val[code_len] ) {
+                event = 'Cursor Up';
+            } else if ('B' == val[code_len]) {
+                event = 'Cursor Down';
+            }
+            code_len++;
         } else if (1 === val.indexOf(')')) {
+            code_len += 2;
             event = 'setspecg1';
         }
+
+        remainder = val.slice(code_len);
     }
 
     // s.debug_inspect({event:event, rows:rows});
     if (event) {
         this.emit(event, rows);
+    } else if (remainder || code_len || digit) {
+        s.debug_inspect({warning:'work left in progress',
+                         remainder: remainder,
+                         digit: digit,
+                         code_len: code_len});
     }
 
     return remainder;

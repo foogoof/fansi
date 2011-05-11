@@ -49,6 +49,10 @@ var flat_data_tests = {
     'data then control': {
         topic: transmute('hello\x1b[B', 'Raw Text', 'Cursor Down'),
         'should be two lines': match_params(['hello', 1])
+    },
+    'control then data': {
+        topic: transmute('\x1b[2Aworld', 'Cursor Up', 'Raw Text'),
+        'should be two lines': match_params([2, 'world'])
     }
 }
 
@@ -89,9 +93,9 @@ var g1_special_char_tests = {
     }
 };
 
-suite.addBatch({'Cursor Down': cursor_down_tests });
-suite.addBatch({'Cursor Up': cursor_up_tests });
-suite.addBatch({'use g1 special chars': g1_special_char_tests});
+// suite.addBatch({'Cursor Down': cursor_down_tests });
+// suite.addBatch({'Cursor Up': cursor_up_tests });
+// suite.addBatch({'use g1 special chars': g1_special_char_tests});
 suite.addBatch({'friendly data': flat_data_tests});
 
 suite.export(module);
