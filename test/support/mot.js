@@ -25,16 +25,26 @@ var expect = function(emitter, callback /* , event1...n */) {
 
 
 // TODO: work with var args instead of requiring a vector as an arg
-var match_params = function(expected) {
+var verify = function() {
+    var expected = _.toArray(arguments);
+
     return function(err, actual) {
         assert.equal(err, undefined);
 
-        if (!_.isEqual(actual, expected)) {
+        var ok = true;
+        for (var i = 0; i < arguments.length; i++) {
+            if (expected[i] !== actual[i]) {
+                ok = false;
+                break;
+            }
+        }
+
+        if (!ok) {
             s.debug_inspect({'actual': actual, 'expected': expected});
         }
-        assert.ok(_.isEqual(actual, expected));
+        assert.ok(ok);
     };
 };
 
-exports.match_params = match_params;
+exports.verify = verify;
 exports.expect = expect;
