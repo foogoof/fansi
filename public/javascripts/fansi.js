@@ -45,6 +45,8 @@ var read_code = function(val) {
                 event = 'Cursor Up';
             } else if ('B' == val[code_len]) {
                 event = 'Cursor Down';
+            } else if ('C' == val[code_len]) {
+                event = 'Cursor Forward';
             }
             code_len++;
         } else if (1 === val.indexOf(')')) {

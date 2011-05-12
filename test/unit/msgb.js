@@ -79,6 +79,14 @@ var basic_ansi_coverage_tests = {
     'Cursor Up': {
         topic: setup({data: '\x1b[A', event:'Cursor Up' }),
         'got it': mot.verify(1)
+    },
+    'Cursor Down': {
+        topic: setup({data: '\x1b[B', event:'Cursor Down' }),
+        'got it': mot.verify(1)
+    },
+    'Cursor Forward': {
+        topic: setup({data: '\x1b[C', event:'Cursor Forward' }),
+        'got it': mot.verify(1)
     }
 };
 
