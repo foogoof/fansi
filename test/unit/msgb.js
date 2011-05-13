@@ -36,7 +36,7 @@ var flat_data_tests = {
         topic: setup({data: 'hello\x1b[Aworld', events:['Raw Text', 'Cursor Up']}),
         'hello, up, world': mot.verify('hello',  1, 'world')
     }
-}
+};
 
 var cursor_down_tests = {
     'param specified with default value': {
@@ -87,13 +87,38 @@ var basic_ansi_coverage_tests = {
     'Cursor Forward': {
         topic: setup({data: '\x1b[C', event:'Cursor Forward' }),
         'got it': mot.verify(1)
+    },
+    'Cursor Position': {
+        topic: setup({data: '\x1b[H', event:'Cursor Position' }),
+        'got it': mot.verify(1)
     }
 };
 
-if (true) {
-    suite.addBatch({'basic ansi': basic_ansi_coverage_tests});
-    suite.addBatch({'use g1 special chars': g1_special_char_tests});
+var parameter_tests = {
+    'missing left': {
+        topic: setup({data:'\x1b[;0H', event: 'Cursor Position'}),
+        'got 1 0': mot.verify(1, 0)
+    },
+    'missing right': {
+        topic: setup({data:'\x1b[0;H', event: 'Cursor Position'}),
+        'got 0 1': mot.verify(0, 1)
+    },
+    'have both': {
+        topic: setup({data:'\x1b[0;0H', event:'Cursor Position'}),
+        'got 0 0': mot.verify(0, 0)
+    },
+    'have none': {
+        topic: setup({data:'\x1b[;H', event:'Cursor Position'}),
+        'got 1 1': mot.verify(1, 1)
+    }
+};
+
+var focus = false;
+if (focus) {
+   suite.addBatch({'params': parameter_tests});
 } else {
+    suite.addBatch({'params': parameter_tests});
+     suite.addBatch({'basic ansi': basic_ansi_coverage_tests});
     suite.addBatch({'Cursor Down': cursor_down_tests });
     suite.addBatch({'Cursor Up': cursor_up_tests });
     suite.addBatch({'use g1 special chars': g1_special_char_tests});
