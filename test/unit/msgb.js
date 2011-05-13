@@ -118,14 +118,14 @@ var unknown_tests = {
         topic: setup({data:'\x1b7foo', events:['_unknown_7', 'Raw Text']}),
         'ignored crap, got text': mot.verify('7', 'foo')
     }
-}
+};
 
-var focus = 1;
+var focus = 0;
 if (focus) {
    suite.addBatch({'unknown_tests': unknown_tests});
 } else {
     suite.addBatch({'params': parameter_tests});
-     suite.addBatch({'basic ansi': basic_ansi_coverage_tests});
+    suite.addBatch({'basic ansi': basic_ansi_coverage_tests});
     suite.addBatch({'Cursor Down': cursor_down_tests });
     suite.addBatch({'Cursor Up': cursor_up_tests });
     suite.addBatch({'use g1 special chars': g1_special_char_tests});
