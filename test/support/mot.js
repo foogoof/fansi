@@ -24,12 +24,12 @@ var expect = function(emitter, callback /* , event1...n */) {
 };
 
 
-// TODO: work with var args instead of requiring a vector as an arg
 var verify = function() {
     var expected = _.toArray(arguments);
 
-    return function(err, actual) {
+    return function(err, vals) {
         assert.equal(err, undefined);
+        var actual = _(vals).flatten();
 
         var ok = true;
         for (var i = 0; i < arguments.length; i++) {
