@@ -113,9 +113,16 @@ var parameter_tests = {
     }
 };
 
-var focus = false;
+var unknown_tests = {
+    '\x1b7' : {
+        topic: setup({data:'\x1b7foo', events:['_unknown_7', 'Raw Text']}),
+        'ignored crap, got text': mot.verify('7', 'foo')
+    }
+}
+
+var focus = 1;
 if (focus) {
-   suite.addBatch({'params': parameter_tests});
+   suite.addBatch({'unknown_tests': unknown_tests});
 } else {
     suite.addBatch({'params': parameter_tests});
      suite.addBatch({'basic ansi': basic_ansi_coverage_tests});

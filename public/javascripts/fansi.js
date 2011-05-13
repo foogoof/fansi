@@ -75,6 +75,9 @@ var read_code = function(val) {
         } else if (1 === val.indexOf(')')) {
             code_len += 2;
             event = 'setspecg1';
+        } else {
+            event = '_unknown_' + val[code_len];
+            params.push(val[code_len++]);
         }
 
         remainder = val.slice(code_len);
