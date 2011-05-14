@@ -117,6 +117,10 @@ var unknown_tests = {
     '\x1b7' : {
         topic: setup({data:'\x1b7foo', events:['_unknown_7', 'Raw Text']}),
         'ignored crap, got text': mot.verify('7', 'foo')
+    },
+    '\x1b=' : {
+        topic: setup({data:'\x1b=', event: 'Set alternate keypad mode'}),
+        'set alt. keypad mode': mot.verify(undefined)
     }
 };
 

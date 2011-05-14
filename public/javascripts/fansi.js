@@ -19,7 +19,12 @@ var ansi_opcode_map = {
     'C' : { name: 'Cursor Forward', defaults: [ 1 ] },
     'D' : { name: 'Cursor Back', defaults: [ 1 ] },
     'E' : { name: 'Cursor Next Line', defaults: [ 1 ] },
-    'H' : { name: 'Cursor Position', defaults: [ 1, 1 ] }
+    'H' : { name: 'Cursor Position', defaults: [ 1, 1 ] },
+    'J' : { name: 'Erase Data', defaults: [ 0 ] },
+    'h' : { name: 'Terminal Config Enable', defaults: [ undefined ] },
+    'l' : { name: 'Terminal Config Disable', defaults: [ undefined] },
+    'm' : { name: 'Select Graphic Rendition', defaults: [ 0 ] },
+    'r' : { name: 'Screen Scroll Enable', defaults: [ undefined, undefined ] } // FIXME: support the variant with NO args :-|
 };
 
 var read_code = function(val) {
@@ -69,6 +74,11 @@ var read_code = function(val) {
         } else if (1 === val.indexOf(')')) {
             code_len += 2;
             event = 'setspecg1';
+            params.push(undefined);
+        } else if (1 == val.indexOf('=')) {
+            code_len += 1;
+            event = 'Set alternate keypad mode';
+            params.push(undefined);
         } else {
             event = '_unknown_' + val[code_len];
             params.push(val[code_len++]);
@@ -78,7 +88,7 @@ var read_code = function(val) {
     }
 
     if (event) {
-        // s.debug_inspect({emitting:event, with:params});
+        s.debug_inspect({emitting:event, with:params});
         this.emit(event, params);
     } else if (remainder || code_len || digit) {
         s.debug_inspect({warning:'work left in progress',

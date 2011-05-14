@@ -32,7 +32,7 @@ var verify = function() {
         var actual = _(vals).flatten();
 
         var ok = true;
-        for (var i = 0; i < arguments.length; i++) {
+        for (var i = 0; i < Math.max(expected.length, actual.length); i++) {
             if (expected[i] !== actual[i]) {
                 ok = false;
                 break;
