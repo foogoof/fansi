@@ -12,10 +12,12 @@ var read_all_codes = function(val) {
 };
 
 var read_code = function(val) {
-    var event = undefined;
-    var code_len = undefined;
-    var digit = undefined, digits = undefined;
+    var idx;
+    var event;
+    var code_len;
+    var digit, digits;
     var params = [];
+    var opcode;
 
     var next_escape = val.indexOf('\x1b');
     var remainder = '';
@@ -33,6 +35,13 @@ var read_code = function(val) {
         code_len = 1;
 
         if ('[' === val[code_len]) {
+            for (idx = 2; idx < val.length; idx++) {
+                if (val[idx] >= '@' || val[idx] <= '~') {
+                    opcode = val[idx];
+                    break;
+                }
+            }
+
             digits = '';
             code_len++;
 
