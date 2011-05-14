@@ -27,9 +27,6 @@ var top_raw_data = [
     '\x1b',    '[',    'H', '\x1b',   '[',    '2',    'J'
 ];
 
-// TODO FIXME CANNOT BE THIS HARD
-var top_raw_data_str = _.reduce(top_raw_data, function(m,v) { return m.toString() + v.toString(); });
-
 var batch = {
     'try it': {
         topic: setup({data:top_raw_data, 
@@ -48,10 +45,43 @@ var batch = {
     }
 };
 
-var focus = 1;
+var Emulator = function() {
+};
+
+Emulator.prototype.set_height = function(params) {
+    this.height = params[1];
+};
+
+Emulator.prototype.dispatch = function(params) {
+    s.debug_inspect({caught:event, with:params});
+
+    if (event === 'Screen Scroll Enable') {
+        this.set_height(params[1]);
+    }
+};
+
+var emulate_batch = {
+    'set screen height': {
+        topic: function() {
+            var em = new Emulator(this.callback);
+            var fm = new fansi.Machine();
+            var that = this;
+            fm.on('Screen Scroll Enable', function(args) { em.set_height(args); that.callback(null, em); });
+            fm.read('\x1b[1;27r');
+            return em;
+        },
+        '27 rows tall': function(em) {
+            assert.equal(em.height, 27);
+        }
+    }
+};
+
+var focus = 0;
 if (focus) {
-    suite.addBatch({'gopher!': batch});
+    suite.addBatch({'em': emulate_batch});
 } else {
+    suite.addBatch({'gopher!': batch});
+    suite.addBatch({'em': emulate_batch});
 }
 
 suite.export(module);

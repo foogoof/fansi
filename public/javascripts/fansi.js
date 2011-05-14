@@ -88,7 +88,7 @@ var read_code = function(val) {
     }
 
     if (event) {
-        s.debug_inspect({emitting:event, with:params});
+        // s.debug_inspect({emitting:event, with:params});
         this.emit(event, params);
     } else if (remainder || code_len || digit) {
         s.debug_inspect({warning:'work left in progress',

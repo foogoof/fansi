@@ -128,13 +128,13 @@ var focus = 0;
 if (focus) {
     suite.addBatch({'friendly data': flat_data_tests});
 } else {
-    suite.addBatch({'unknown_tests': unknown_tests});
-    suite.addBatch({'params': parameter_tests});
-    suite.addBatch({'basic ansi': basic_ansi_coverage_tests});
     suite.addBatch({'Cursor Down': cursor_down_tests });
     suite.addBatch({'Cursor Up': cursor_up_tests });
-    suite.addBatch({'use g1 special chars': g1_special_char_tests});
+    suite.addBatch({'basic ansi': basic_ansi_coverage_tests});
     suite.addBatch({'friendly data': flat_data_tests});
+    suite.addBatch({'params': parameter_tests});
+    suite.addBatch({'unknown_tests': unknown_tests});
+    suite.addBatch({'use g1 special chars': g1_special_char_tests});
 }
 
 suite.export(module);
