@@ -1,4 +1,5 @@
-var s = require('./s');
+var s = require('./s'),
+    _ = require('underscore');
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -36,14 +37,15 @@ var finish_num = function(num_in_progress) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-var extract_params = function(data, end) {
+var extract_params = function(data, begin, end) {
     var params, idx, num, lim;
 
     if (data === undefined || end === undefined) {
         return undefined;
     }
 
-    for (params = [], num = '', idx = 0, lim = Math.min(data.length, end); idx < lim; idx++) {
+    lim = Math.min(data.length, end);
+    for (params = [], num = '', idx = begin; idx < lim; idx++) {
         switch (data[idx]) {
         case ';':
             params.push(finish_num(num));
@@ -64,5 +66,30 @@ var extract_params = function(data, end) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+var apply_default_params = function(raw_params, defaults) {
+    var act_params = [];
+
+    for (var i = 0; i < Math.max(raw_params.length, defaults.length); i++) {
+        var val = raw_params[i];
+        if (val === undefined) {
+            val = defaults[i];
+        }
+
+        act_params[i] = val;
+    }
+
+    return act_params;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+var have_all_values = function(array) {
+    return !_.detect(array, function(v) { return v === undefined; });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 exports.find_opcode_pos = find_opcode_pos;
 exports.extract_params = extract_params;
+exports.apply_default_params = apply_default_params;
+exports.have_all_values = have_all_values;

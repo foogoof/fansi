@@ -90,7 +90,7 @@ var basic_ansi_coverage_tests = {
     },
     'Cursor Position': {
         topic: setup({data: '\x1b[H', event:'Cursor Position' }),
-        'got it': mot.verify(1)
+        'got it': mot.verify(1,1)
     }
 };
 
@@ -122,8 +122,9 @@ var unknown_tests = {
 
 var focus = 0;
 if (focus) {
-   suite.addBatch({'unknown_tests': unknown_tests});
+    suite.addBatch({'friendly data': flat_data_tests});
 } else {
+    suite.addBatch({'unknown_tests': unknown_tests});
     suite.addBatch({'params': parameter_tests});
     suite.addBatch({'basic ansi': basic_ansi_coverage_tests});
     suite.addBatch({'Cursor Down': cursor_down_tests });

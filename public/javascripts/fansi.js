@@ -2,6 +2,8 @@ var events = require('events');
 var _ = require('underscore'),
     util = require('util');
 var s = require('./s');
+var toolbox = require('./toolbox');
+var _exp_target = null;
 
 var read_all_codes = function(val) {
     var remainder = val;
@@ -11,16 +13,28 @@ var read_all_codes = function(val) {
     } while (remainder);
 };
 
+var ansi_opcode_map = {
+    'A' : { name: 'Cursor Up', defaults: [ 1 ] },
+    'B' : { name: 'Cursor Down', defaults: [ 1 ] },
+    'C' : { name: 'Cursor Forward', defaults: [ 1 ] },
+    'D' : { name: 'Cursor Back', defaults: [ 1 ] },
+    'E' : { name: 'Cursor Next Line', defaults: [ 1 ] },
+    'H' : { name: 'Cursor Position', defaults: [ 1, 1 ] }
+};
+
 var read_code = function(val) {
     var idx;
     var event;
     var code_len;
     var digit, digits;
-    var params = [];
-    var opcode;
+    var params, raw_params, act_params;
+    var opcode, opcode_pos, opcode_attrs;
+    var esq_code_data;
 
     var next_escape = val.indexOf('\x1b');
     var remainder = '';
+
+    params = [];
 
     if (-1 === next_escape) {
         event = 'Raw Text';
@@ -33,54 +47,25 @@ var read_code = function(val) {
     }
     else if (0 === next_escape) {
         code_len = 1;
+        if ('[' === val[1]) {
+            esq_code_data = val.slice(2);
+            opcode_pos = toolbox.find_opcode_pos(esq_code_data);
+            
+            if (opcode_pos !== undefined) {
+                code_len = opcode_pos + 3; // TODO FIXME LESS UGH
+                opcode = esq_code_data[opcode_pos];
+                opcode_attrs = ansi_opcode_map[opcode];
 
-        if ('[' === val[code_len]) {
-            for (idx = 2; idx < val.length; idx++) {
-                if (val[idx] >= '@' || val[idx] <= '~') {
-                    opcode = val[idx];
-                    break;
-                }
-            }
+                if (opcode_attrs) {
+                    raw_params = toolbox.extract_params(esq_code_data, 0, opcode_pos);
+                    act_params = toolbox.apply_default_params(raw_params, opcode_attrs.defaults);
 
-            digits = '';
-            code_len++;
-
-            do {
-                var chr = val[code_len];
-                
-                digit = Number(chr);
-                if (!isNaN(digit)) {
-                    digits += digit;
-                    code_len++;
-                } else if (';' === chr) {
-                    if (0 === digits.length) {
-                        params.push(1); // FIXME: default value depends on opcode
-                    } else {
-                        params.push(Number(digits));
+                    if (toolbox.have_all_values(act_params)) {
+                        event = opcode_attrs.name;
+                        params = act_params;
                     }
-                    digits = '';
-                    code_len++;
-                } else {
-                    break;
                 }
-            } while(true);
-
-            if (digits.length > 0) {
-                params.push(Number(digits));
-            } else {
-                params.push(1);
             }
-
-            if ('A' == val[code_len] ) {
-                event = 'Cursor Up';
-            } else if ('B' == val[code_len]) {
-                event = 'Cursor Down';
-            } else if ('C' == val[code_len]) {
-                event = 'Cursor Forward';
-            } else if ('H' == val[code_len]) {
-                event = 'Cursor Position';
-            }
-            code_len++;
         } else if (1 === val.indexOf(')')) {
             code_len += 2;
             event = 'setspecg1';
@@ -93,7 +78,7 @@ var read_code = function(val) {
     }
 
     if (event) {
-        //s.debug_inspect({emitting:event, with:params});
+        // s.debug_inspect({emitting:event, with:params});
         this.emit(event, params);
     } else if (remainder || code_len || digit) {
         s.debug_inspect({warning:'work left in progress',
@@ -107,10 +92,10 @@ var read_code = function(val) {
 
 var Machine = (function() {
                    util.inherits(Machine, events.EventEmitter);
-                   
+
                    function Machine() {
                    }
-                   
+
                    Machine.prototype.read = read_all_codes;
                    Machine.prototype.read_code = read_code;
 

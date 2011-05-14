@@ -71,43 +71,43 @@ var identify_params_batch = {
     },
     'implicit param': {
         'placeholder returned for empty string': function() {
-            noisy_verify(toolbox.extract_params('', 0), [undefined]);
+            noisy_verify(toolbox.extract_params('', 0, 0), [undefined]);
         },
         'one ; => 2 placeholders': function() {
-            noisy_verify(toolbox.extract_params(';', 1), [undefined, undefined]);
+            noisy_verify(toolbox.extract_params(';', 0, 1), [undefined, undefined]);
         },
         'many ; => many + 1 placeholders': function() {
-            noisy_verify(toolbox.extract_params(';;;', 3), [undefined, undefined, undefined, undefined]);
+            noisy_verify(toolbox.extract_params(';;;', 0, 3), [undefined, undefined, undefined, undefined]);
         }
     },
     'explicit param': {
         'value returned for simple string': function() {
-            noisy_verify(toolbox.extract_params('0', 1), [0]);
+            noisy_verify(toolbox.extract_params('0', 0, 1), [0]);
         },
         'left value, one placeholder': function() {
-            noisy_verify(toolbox.extract_params('0;', 2), [0, undefined]);
+            noisy_verify(toolbox.extract_params('0;', 0, 2), [0, undefined]);
         },
         'right value, one placeholder': function() {
-            noisy_verify(toolbox.extract_params(';3', 2), [undefined, 3]);
+            noisy_verify(toolbox.extract_params(';3', 0, 2), [undefined, 3]);
         },
         'two values, one placeholder': function() {
-            noisy_verify(toolbox.extract_params('0;3', 3), [0, 3]);
+            noisy_verify(toolbox.extract_params('0;3', 0, 3), [0, 3]);
         },
         'all values, many placeholders': function() {
-            noisy_verify(toolbox.extract_params('0;1;2', 5), [0, 1, 2]);
+            noisy_verify(toolbox.extract_params('0;1;2', 0, 5), [0, 1, 2]);
         },
         'some values, many placeholders': function() {
-            noisy_verify(toolbox.extract_params('0;;2', 5), [0, undefined, 2]);
+            noisy_verify(toolbox.extract_params('0;;2', 0, 5), [0, undefined, 2]);
         }
     },
     'multiple digit numbers': {
         '0123': function() {
-            noisy_verify(toolbox.extract_params('123', 3), [123]);
+            noisy_verify(toolbox.extract_params('123', 0, 3), [123]);
         }
     },
     'skip crap': {
         '?47': function() {
-            noisy_verify(toolbox.extract_params('?47', 3), [47]);
+            noisy_verify(toolbox.extract_params('?47', 0, 3), [47]);
         }
     }
 };
