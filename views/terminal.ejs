@@ -1,0 +1,20 @@
+<% var rows = 20, cols = 80 %>
+
+<table id="terminal">
+  <thead>
+  <tr>
+  <% for (var i = 0; i < cols; i++) { %>
+     <th><%= i % 10 %></th>
+     <% } %>
+  </tr>
+  </thead>
+  <tbody>
+  <% for (var j = 0; j < rows; j++) { %>
+  <tr>
+    <% for (var k = 0; k < cols; k++) { %>
+       <td id="<%= k + '_' + j %>"><%= (k * j % 5) ? ' ' : '-'  %></td>
+       <% } %>
+  </tr>
+  <% } %>
+  </tbody>
+</table>

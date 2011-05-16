@@ -1,0 +1,8 @@
+#terminal {
+    font-family: monospace;
+}
+
+#terminal th, #terminal td {
+    padding: 0px;
+}
+
