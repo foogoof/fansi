@@ -29,18 +29,18 @@ var ansi_opcode_map = {
 };
 
 var event = {
-    cursor_back: { opcode: 'D', name: 'Cursor Back', defaults: [ 1 ] },
-    cursor_down: { opcode: 'B', name: 'Cursor Down', defaults: [ 1 ] },
-    cursor_forward: { opcode: 'C', name: 'Cursor Forward', defaults: [ 1 ] },
-    cursor_next_line: { opcode: 'E', name: 'Cursor Next Line', defaults: [ 1 ] },
-    cursor_position: { opcode: 'H', name: 'Cursor Position', defaults: [ 1, 1 ] },
-    cursor_position: { opcode: 'H', name: 'Cursor Position', defaults: [1, 1] },
-    cursor_up: { opcode: 'A', name: 'Cursor Up', defaults: [ 1 ] },
-    erase_data: { opcode: 'J', name: 'Erase Data', defaults: [ 0 ] },
-    screen_scroll_enable: { opcode: 'r', name: 'Screen Scroll Enable', defaults: [ undefined, undefined ] } ,
-    select_graphic_rendition: { opcode: 'm', name: 'Select Graphic Rendition', defaults: [ 0 ] },
-    terminal_config_disable: { opcode: 'l', name: 'Terminal Config Disable', defaults: [ undefined] },
-    terminal_config_enable: { opcode: 'h', name: 'Terminal Config Enable', defaults: [ undefined ] }
+    cursor_back: 'Cursor Back',
+    cursor_down: 'Cursor Down',
+    cursor_forward: 'Cursor Forward',
+    cursor_next_line: 'Cursor Next Line',
+    cursor_position: 'Cursor Position',
+    cursor_position: 'Cursor Position',
+    cursor_up: 'Cursor Up',
+    erase_data: 'Erase Data',
+    screen_scroll_enable: 'Screen Scroll Enable',
+    select_graphic_rendition: 'Select Graphic Rendition',
+    terminal_config_disable: 'Terminal Config Disable',
+    terminal_config_enable: 'Terminal Config Enable'
 };
 
 var read_code = function(val) {
