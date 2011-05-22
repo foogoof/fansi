@@ -1,5 +1,6 @@
 var events = require('events');
 var _ = require('underscore'),
+    _str = require('underscore.string'),
     util = require('util');
 var s = require('./s');
 var toolbox = require('./toolbox');
@@ -12,16 +13,6 @@ var read_all_codes = function(val) {
         // if (remainder) s.debug_inspect({remainder:remainder});
     } while (remainder);
 };
-
-var name_to_event = function(name) {
-    var event;
-    
-    if (name) {
-        
-    }
-    
-    return event;
-}
 
 var ansi_opcode_map = {
     'A' : { name: 'CursorUp', defaults: [ 1 ] },
@@ -38,19 +29,13 @@ var ansi_opcode_map = {
 // FIXME: support the variant with NO args :-|
 };
 
-var event = {
-    cursor_back: 'CursorBack',
-    cursor_down: 'CursorDown',
-    cursor_forward: 'CursorForward',
-    cursor_next_line: 'CursorNextLine',
-    cursor_position: ansi_opcode_map['H'].name,
-    cursor_up: 'CursorUp',
-    erase_data: 'EraseData',
-    screen_scroll_enable: 'ScreenScrollEnable',
-    select_graphic_rendition: 'SelectGraphicRendition',
-    terminal_config_disable: 'TerminalConfigDisable',
-    terminal_config_enable: 'TerminalConfigEnable'
-};
+var ansi_events = _.reduce(ansi_opcode_map, function(event_map, map) {
+    var name = map.name;
+    event_map[_str.underscored(name)] = name;
+    return event_map;
+}, {});
+
+var event = ansi_events;
 
 var read_code = function(val) {
     var idx;
