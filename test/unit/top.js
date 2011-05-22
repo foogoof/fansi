@@ -32,15 +32,15 @@ var batch = {
         topic: setup({data:top_raw_data, 
                       events: ['setspecg1',
                                '_unknown_7',
-                               'Terminal Config Enable',
-                               'Screen Scroll Enable',
-                               'Select Graphic Rendition',
-                               'Terminal Config Disable',
+                               'TerminalConfigEnable',
+                               'ScreenScrollEnable',
+                               'SelectGraphicRendition',
+                               'TerminalConfigDisable',
                                // 'Terminal Config Enable',
                                'Set alternate keypad mode',
                                fansi.event.cursor_position,
                                //'Cursor Position',
-                               'Erase Data'
+                               'EraseData'
                               ]}),
         'got the stuff': mot.verify(undefined, '7', 47, 1, 27, 0, 4, 1, undefined, 1, 1, 2)
     }

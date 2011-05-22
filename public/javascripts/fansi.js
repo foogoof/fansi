@@ -13,33 +13,43 @@ var read_all_codes = function(val) {
     } while (remainder);
 };
 
+var name_to_event = function(name) {
+    var event;
+    
+    if (name) {
+        
+    }
+    
+    return event;
+}
+
 var ansi_opcode_map = {
-    'A' : { name: 'Cursor Up', defaults: [ 1 ] },
-    'B' : { name: 'Cursor Down', defaults: [ 1 ] },
-    'C' : { name: 'Cursor Forward', defaults: [ 1 ] },
-    'D' : { name: 'Cursor Back', defaults: [ 1 ] },
-    'E' : { name: 'Cursor Next Line', defaults: [ 1 ] },
-    'H' : { name: 'Cursor Position', defaults: [ 1, 1 ] },
-    'J' : { name: 'Erase Data', defaults: [ 0 ] },
-    'h' : { name: 'Terminal Config Enable', defaults: [ undefined ] },
-    'l' : { name: 'Terminal Config Disable', defaults: [ undefined] },
-    'm' : { name: 'Select Graphic Rendition', defaults: [ 0 ] },
-    'r' : { name: 'Screen Scroll Enable', defaults: [ undefined, undefined ] } 
+    'A' : { name: 'CursorUp', defaults: [ 1 ] },
+    'B' : { name: 'CursorDown', defaults: [ 1 ] },
+    'C' : { name: 'CursorForward', defaults: [ 1 ] },
+    'D' : { name: 'CursorBack', defaults: [ 1 ] },
+    'E' : { name: 'CursorNext Line', defaults: [ 1 ] },
+    'H' : { name: 'CursorPosition', defaults: [ 1, 1 ] },
+    'J' : { name: 'EraseData', defaults: [ 0 ] },
+    'h' : { name: 'TerminalConfigEnable', defaults: [ undefined ] },
+    'l' : { name: 'TerminalConfigDisable', defaults: [ undefined] },
+    'm' : { name: 'SelectGraphicRendition', defaults: [ 0 ] },
+    'r' : { name: 'ScreenScrollEnable', defaults: [ undefined, undefined ] } 
 // FIXME: support the variant with NO args :-|
 };
 
 var event = {
-    cursor_back: 'Cursor Back',
-    cursor_down: 'Cursor Down',
-    cursor_forward: 'Cursor Forward',
-    cursor_next_line: 'Cursor Next Line',
+    cursor_back: 'CursorBack',
+    cursor_down: 'CursorDown',
+    cursor_forward: 'CursorForward',
+    cursor_next_line: 'CursorNextLine',
     cursor_position: ansi_opcode_map['H'].name,
-    cursor_up: 'Cursor Up',
-    erase_data: 'Erase Data',
-    screen_scroll_enable: 'Screen Scroll Enable',
-    select_graphic_rendition: 'Select Graphic Rendition',
-    terminal_config_disable: 'Terminal Config Disable',
-    terminal_config_enable: 'Terminal Config Enable'
+    cursor_up: 'CursorUp',
+    erase_data: 'EraseData',
+    screen_scroll_enable: 'ScreenScrollEnable',
+    select_graphic_rendition: 'SelectGraphicRendition',
+    terminal_config_disable: 'TerminalConfigDisable',
+    terminal_config_enable: 'TerminalConfigEnable'
 };
 
 var read_code = function(val) {

@@ -25,45 +25,45 @@ var flat_data_tests = {
         'hello': mot.verify('hello, world')
     },
     'data then control': {
-        topic: setup({data:'hello\x1b[B', events:['Raw Text', 'Cursor Down']}),
+        topic: setup({data:'hello\x1b[B', events:['Raw Text', 'CursorDown']}),
         'hello, down': mot.verify('hello', 1)
     },
     'control then data': {
-        topic: setup({data: '\x1b[2Aworld', events:['Cursor Up', 'Raw Text']}),
+        topic: setup({data: '\x1b[2Aworld', events:['CursorUp', 'Raw Text']}),
         'up, world': mot.verify(2, 'world')
     },
     'data then control then data': {
-        topic: setup({data: 'hello\x1b[Aworld', events:['Raw Text', 'Cursor Up']}),
+        topic: setup({data: 'hello\x1b[Aworld', events:['Raw Text', 'CursorUp']}),
         'hello, up, world': mot.verify('hello',  1, 'world')
     }
 };
 
 var cursor_down_tests = {
     'param specified with default value': {
-        topic: setup({data: '\x1b[1B', event:'Cursor Down'}),
+        topic: setup({data: '\x1b[1B', event:'CursorDown'}),
         'go down one line': mot.verify(1)
     },
     'param NOT specified': {
-        topic: setup({data: '\x1b[B', event:'Cursor Down'}),
+        topic: setup({data: '\x1b[B', event:'CursorDown'}),
         'default value is 1': mot.verify(1)
     },
     'param specified with custom value': {
-        topic: setup({data: '\x1b[2B', event:'Cursor Down'}),
+        topic: setup({data: '\x1b[2B', event:'CursorDown'}),
         'go down two lines': mot.verify(2)
     }
 };
 
 var cursor_up_tests = {
     'param specified with default value': {
-        topic: setup({data: '\x1b[1A', event:'Cursor Up'}),
+        topic: setup({data: '\x1b[1A', event:'CursorUp'}),
         'go up one line': mot.verify(1)
     },
     'param NOT specified': {
-        topic: setup({data: '\x1b[A', event:'Cursor Up'}),
+        topic: setup({data: '\x1b[A', event:'CursorUp'}),
         'default value is 1': mot.verify(1)
     },
     'param specified with custom value': {
-        topic: setup({data: '\x1b[2A', event:'Cursor Up'}),
+        topic: setup({data: '\x1b[2A', event:'CursorUp'}),
         'go up two lines': mot.verify(2)
     }
 };
@@ -77,38 +77,38 @@ var g1_special_char_tests = {
 
 var basic_ansi_coverage_tests = {
     'Cursor Up': {
-        topic: setup({data: '\x1b[A', event:'Cursor Up' }),
+        topic: setup({data: '\x1b[A', event:'CursorUp' }),
         'got it': mot.verify(1)
     },
     'Cursor Down': {
-        topic: setup({data: '\x1b[B', event:'Cursor Down' }),
+        topic: setup({data: '\x1b[B', event:'CursorDown' }),
         'got it': mot.verify(1)
     },
     'Cursor Forward': {
-        topic: setup({data: '\x1b[C', event:'Cursor Forward' }),
+        topic: setup({data: '\x1b[C', event:'CursorForward' }),
         'got it': mot.verify(1)
     },
     'Cursor Position': {
-        topic: setup({data: '\x1b[H', event:'Cursor Position' }),
+        topic: setup({data: '\x1b[H', event:'CursorPosition' }),
         'got it': mot.verify(1,1)
     }
 };
 
 var parameter_tests = {
     'missing left': {
-        topic: setup({data:'\x1b[;0H', event: 'Cursor Position'}),
+        topic: setup({data:'\x1b[;0H', event: 'CursorPosition'}),
         'got 1 0': mot.verify(1, 0)
     },
     'missing right': {
-        topic: setup({data:'\x1b[0;H', event: 'Cursor Position'}),
+        topic: setup({data:'\x1b[0;H', event: 'CursorPosition'}),
         'got 0 1': mot.verify(0, 1)
     },
     'have both': {
-        topic: setup({data:'\x1b[0;0H', event:'Cursor Position'}),
+        topic: setup({data:'\x1b[0;0H', event:'CursorPosition'}),
         'got 0 0': mot.verify(0, 0)
     },
     'have none': {
-        topic: setup({data:'\x1b[;H', event:'Cursor Position'}),
+        topic: setup({data:'\x1b[;H', event:'CursorPosition'}),
         'got 1 1': mot.verify(1, 1)
     }
 };
