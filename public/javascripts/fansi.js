@@ -24,7 +24,23 @@ var ansi_opcode_map = {
     'h' : { name: 'Terminal Config Enable', defaults: [ undefined ] },
     'l' : { name: 'Terminal Config Disable', defaults: [ undefined] },
     'm' : { name: 'Select Graphic Rendition', defaults: [ 0 ] },
-    'r' : { name: 'Screen Scroll Enable', defaults: [ undefined, undefined ] } // FIXME: support the variant with NO args :-|
+    'r' : { name: 'Screen Scroll Enable', defaults: [ undefined, undefined ] } 
+// FIXME: support the variant with NO args :-|
+};
+
+var event = {
+    cursor_back: { opcode: 'D', name: 'Cursor Back', defaults: [ 1 ] },
+    cursor_down: { opcode: 'B', name: 'Cursor Down', defaults: [ 1 ] },
+    cursor_forward: { opcode: 'C', name: 'Cursor Forward', defaults: [ 1 ] },
+    cursor_next_line: { opcode: 'E', name: 'Cursor Next Line', defaults: [ 1 ] },
+    cursor_position: { opcode: 'H', name: 'Cursor Position', defaults: [ 1, 1 ] },
+    cursor_position: { opcode: 'H', name: 'Cursor Position', defaults: [1, 1] },
+    cursor_up: { opcode: 'A', name: 'Cursor Up', defaults: [ 1 ] },
+    erase_data: { opcode: 'J', name: 'Erase Data', defaults: [ 0 ] },
+    screen_scroll_enable: { opcode: 'r', name: 'Screen Scroll Enable', defaults: [ undefined, undefined ] } ,
+    select_graphic_rendition: { opcode: 'm', name: 'Select Graphic Rendition', defaults: [ 0 ] },
+    terminal_config_disable: { opcode: 'l', name: 'Terminal Config Disable', defaults: [ undefined] },
+    terminal_config_enable: { opcode: 'h', name: 'Terminal Config Enable', defaults: [ undefined ] }
 };
 
 var read_code = function(val) {
@@ -122,3 +138,4 @@ try {
 
 _exp_target.machine = new Machine();
 _exp_target.Machine = Machine;
+_exp_target.event = event;

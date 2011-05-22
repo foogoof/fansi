@@ -38,7 +38,8 @@ var batch = {
                                'Terminal Config Disable',
                                // 'Terminal Config Enable',
                                'Set alternate keypad mode',
-                               'Cursor Position',
+                               fansi.event.cursor_position.name,
+                               //'Cursor Position',
                                'Erase Data'
                               ]}),
         'got the stuff': mot.verify(undefined, '7', 47, 1, 27, 0, 4, 1, undefined, 1, 1, 2)
@@ -66,7 +67,7 @@ var emulate_batch = {
             var em = new Emulator(this.callback);
             var fm = new fansi.Machine();
             var that = this;
-            fm.on('Screen Scroll Enable', function(args) { em.set_height(args); that.callback(null, em); });
+            fm.on(fansi.event.screen_scroll_enable.name, function(args) { em.set_height(args); that.callback(null, em); });
             fm.read('\x1b[1;27r');
             return em;
         },
