@@ -4,6 +4,7 @@ var vows = require('vows'),
     toolbox = require('../../public/javascripts/toolbox'),
     fansi = require('../../public/javascripts/fansi'),
     fs = require('fs'),
+    Set = require('set'),
     s = require('../../public/javascripts/s');
 
 var suite = vows.describe('test_top');
@@ -13,6 +14,7 @@ var expected_results = [
     fansi.event.unknown7,                       '7',
     fansi.event.terminal_config_enable,         [47, 1],
     fansi.event.screen_scroll_enable,           27,
+    fansi.event.select_graphic_rendition,       0,
     fansi.event.terminal_config_disable,        0,
     fansi.event.terminal_config_enable,         4,
     fansi.event.set_alternate_keypad_mode,      undefined,
@@ -22,7 +24,6 @@ var expected_results = [
 
 var do_stuff = function(callback, expected_sequence, file) { 
     var expected_events = [], expected_messages = [];
-    var ze_callback = callback;
 
     var machine = new fansi.Machine();
 
@@ -36,7 +37,7 @@ var do_stuff = function(callback, expected_sequence, file) {
 
     // s.debug_inspect({exp_events: expected_events, exp_msgs: expected_messages});
 
-    _.each(expected_events,
+    _.each(Set.unique(expected_events),
         function(msg) {
             var sink = function(data) {
                 s.debug_inspect({me:this, data:data});
@@ -48,7 +49,7 @@ var do_stuff = function(callback, expected_sequence, file) {
                 
                 if (actual_events.length == expected_events.length) {
                     s.debug_inspect({act_events: actual_events, act_msgs: actual_messages});
-                    ze_callback(null, actual_messages);
+                    callback(null, actual_messages);
                 }
             };
 
@@ -57,7 +58,6 @@ var do_stuff = function(callback, expected_sequence, file) {
                 sink:sink
             };
 
-            s.debug_inspect({handler:handler});
             machine.on(handler.message, _.bind(handler.sink, handler));
         }
     );
@@ -65,7 +65,7 @@ var do_stuff = function(callback, expected_sequence, file) {
     // start reading the data
     var go_time = function(err, data) {
         if (err) {
-            ze_callback(err, null);
+            callback(err, null);
         } else { 
             s.debug_inspect({datalen: data.length});
             machine.read(data.toString());
