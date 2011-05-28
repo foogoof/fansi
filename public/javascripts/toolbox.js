@@ -89,7 +89,31 @@ var have_all_values = function(array) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+var partition = function(width, seq) {
+    var ret = [];
+
+    if (!seq || !width) {
+        return ret;
+    }
+
+    for (var i = 0; i < seq.length; i++) {
+        var bucket_idx = Math.floor(i / width);
+        var drop_idx = i % width;
+
+        if (!ret[bucket_idx]) {
+            ret[bucket_idx] = [];
+        }
+
+        ret[bucket_idx][drop_idx] = seq[i];
+    }
+
+    return ret;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
 exports.find_opcode_pos = find_opcode_pos;
 exports.extract_params = extract_params;
 exports.apply_default_params = apply_default_params;
 exports.have_all_values = have_all_values;
+exports.partition = partition;
