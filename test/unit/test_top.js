@@ -19,7 +19,8 @@ var expected_results = [
     fansi.event.terminal_config_enable,         1,
     fansi.event.set_alternate_keypad_mode,      undefined,
     fansi.event.cursor_position,                [1, 1],
-    fansi.event.erase_data,                     2
+    fansi.event.erase_data,                     2,
+    fansi.event.raw_text,                       'Processes: 58 total, 4 running, 54 sleeping, 289 threads'
 ];
 
 var expected_events = [], expected_messages = [];

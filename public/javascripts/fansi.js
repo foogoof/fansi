@@ -44,7 +44,8 @@ var misc_opcodes = {
 var misc_events = {
     setspecg1: 'setspecg1',
     unknown7: '_unknown_7',
-    set_alternate_keypad_mode: 'Set alternate keypad mode'
+    set_alternate_keypad_mode: 'Set alternate keypad mode',
+    raw_text: 'raw_text'
 };
 
 var event = _.extend({}, ansi_events, misc_events);
@@ -64,11 +65,11 @@ var read_code = function(val) {
     params = [];
 
     if (-1 === next_escape) {
-        event = 'Raw Text';
+        event = misc_events.raw_text;
         params.push(val);
     }
     else if (0 !== next_escape) {
-        event = 'Raw Text';
+        event = misc_events.raw_text;
         params.push(val.substring(0, next_escape));
         remainder = val.slice(next_escape);
     }
