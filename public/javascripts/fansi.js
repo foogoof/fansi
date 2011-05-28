@@ -35,7 +35,17 @@ var ansi_events = _.reduce(ansi_opcode_map, function(event_map, map) {
     return event_map;
 }, {});
 
-var event = ansi_events;
+var misc_opcodes = {
+    ')' : { name: 'setspecg1', defaults: [ undefined ] }
+};
+
+// TODO: automate the creation of this object
+var misc_events = {
+    setspecg1: 'setspecg1',
+    unknown7: '_unknown_7'
+};
+
+var event = _.extend({}, ansi_events, misc_events);
 
 var read_code = function(val) {
     var idx;
@@ -83,7 +93,7 @@ var read_code = function(val) {
             }
         } else if (1 === val.indexOf(')')) {
             code_len += 2;
-            event = 'setspecg1';
+            event = misc_opcodes[')'].name;
             params.push(undefined);
         } else if (1 == val.indexOf('=')) {
             code_len += 1;
@@ -98,7 +108,7 @@ var read_code = function(val) {
     }
 
     if (event) {
-        // s.debug_inspect({emitting:event, with:params});
+        s.debug_inspect({emitting:event, with:params});
         this.emit(event, params);
     } else if (remainder || code_len || digit) {
         s.debug_inspect({warning:'work left in progress',
