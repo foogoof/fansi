@@ -36,13 +36,15 @@ var ansi_events = _.reduce(ansi_opcode_map, function(event_map, map) {
 }, {});
 
 var misc_opcodes = {
-    ')' : { name: 'setspecg1', defaults: [ undefined ] }
+    ')' : { name: 'setspecg1', defaults: [ undefined ] },
+    '=' : { name: 'Set alternate keypad mode', defaults: [ undefined ] }
 };
 
 // TODO: automate the creation of this object
 var misc_events = {
     setspecg1: 'setspecg1',
-    unknown7: '_unknown_7'
+    unknown7: '_unknown_7',
+    set_alternate_keypad_mode: 'Set alternate keypad mode'
 };
 
 var event = _.extend({}, ansi_events, misc_events);
@@ -97,7 +99,7 @@ var read_code = function(val) {
             params.push(undefined);
         } else if (1 == val.indexOf('=')) {
             code_len += 1;
-            event = 'Set alternate keypad mode';
+            event = misc_opcodes['='].name;
             params.push(undefined);
         } else {
             event = '_unknown_' + val[code_len];
@@ -108,7 +110,7 @@ var read_code = function(val) {
     }
 
     if (event) {
-        s.debug_inspect({emitting:event, with:params});
+        // s.debug_inspect({emitting:event, with:params});
         this.emit(event, params);
     } else if (remainder || code_len || digit) {
         s.debug_inspect({warning:'work left in progress',
