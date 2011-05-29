@@ -48,10 +48,11 @@ var finish_num = function(num_in_progress) {
         return undefined; // Number('') === 0
     }
     num = Number(num_in_progress);
-    if (isNaN(num))
+    if (isNaN(num)) {
         return undefined;
+    }
     return num;
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -86,9 +87,10 @@ var extract_params = function(data, begin, end) {
 
 var apply_default_params = function(raw_params, defaults) {
     var act_params = [];
+    var i, val;
 
-    for (var i = 0; i < Math.max(raw_params.length, defaults.length); i++) {
-        var val = raw_params[i];
+    for (i = 0; i < Math.max(raw_params.length, defaults.length); i++) {
+        val = raw_params[i];
         if (val === undefined) {
             val = defaults[i];
         }
@@ -103,20 +105,20 @@ var apply_default_params = function(raw_params, defaults) {
 
 var have_all_values = function(array) {
     return !_.detect(array, function(v) { return v === undefined; });
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 
 var partition = function(width, seq) {
-    var ret = [];
+    var ret = [], i, bucket_idx, drop_idx;
 
     if (!seq || !width) {
         return ret;
     }
 
-    for (var i = 0; i < seq.length; i++) {
-        var bucket_idx = Math.floor(i / width);
-        var drop_idx = i % width;
+    for (i = 0; i < seq.length; i++) {
+        bucket_idx = Math.floor(i / width);
+        drop_idx = i % width;
 
         if (!ret[bucket_idx]) {
             ret[bucket_idx] = [];

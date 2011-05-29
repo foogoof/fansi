@@ -116,7 +116,7 @@ var read_code = function(val) {
             code_len += 2;
             event = misc_opcodes[')'].name;
             params.push(undefined);
-        } else if (1 == val.indexOf('=')) {
+        } else if (1 === val.indexOf('=')) {
             code_len += 1;
             event = misc_opcodes['='].name;
             params.push(undefined);
@@ -141,18 +141,13 @@ var read_code = function(val) {
     return remainder;
 };
 
-var Machine = (function() {
-                   util.inherits(Machine, events.EventEmitter);
+var Machine = function() {
+};
 
-                   function Machine() {
-                   }
+util.inherits(Machine, events.EventEmitter);
 
-                   Machine.prototype.read = read_all_codes;
-                   Machine.prototype.read_code = read_code;
-
-                   return Machine;
-               })();
-
+Machine.prototype.read = read_all_codes;
+Machine.prototype.read_code = read_code;
 
 try {
     _exp_target = exports;

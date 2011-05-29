@@ -45,8 +45,9 @@ fansi.write_char = function(chr) {
 };
 
 fansi.advance_cursor = function(places) {
-    if (!places)
+    if (!places) {
         places = 1;
+    }
     this.term.pos.col++;
 };
 
@@ -70,17 +71,20 @@ fansi.get_cell = function(pos) {
 
 fansi.add_row = function(row_num) {
     var html = "";
-    for (var col = 0; col < this.term.dim.col; col++) {
-        var id = "r" + row_num + "c" + col;
-        var cell = "<span class='cell' id='" + id + "'>" + '&nbsp;' + "</span>";
+    var col, id, cell;
+
+    for (col = 0; col < this.term.dim.col; col++) {
+        id = "r" + row_num + "c" + col;
+        cell = "<span class='cell' id='" + id + "'>" + '&nbsp;' + "</span>";
         html += cell;
     }
 
     this.term.content.append("<div>" + html + "</div>");
-}
+};
 
 fansi.build_term = function() {
-    for (var row = 0; row < this.term.dim.row; row++) {
+    var row;
+    for (row = 0; row < this.term.dim.row; row++) {
         this.add_row(row);
     }
 };
