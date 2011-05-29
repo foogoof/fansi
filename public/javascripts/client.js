@@ -38,13 +38,33 @@ fansi.setup = function () {
     fansi.term = term;
 };
 
+fansi.write_char = function(chr) {
+    var cell = this.get_current_cell();
+    cell.empty();
+    cell.append(chr);
+};
+
+fansi.advance_cursor = function(places) {
+    if (!places)
+        places = 1;
+    this.term.pos.col++;
+};
+
+fansi.write_and_advance = function(chr) {
+    this.write_char(chr);
+    this.advance_cursor();
+};
+
 fansi.cell_id = function(pos) {
     return "r" + pos.row + "c" + pos.col;
 };
 
+fansi.get_current_cell = function() {
+    return this.get_cell(this.term.pos);
+};
+
 fansi.get_cell = function(pos) {
-    var at = pos ? pos : this.term.pos;
-    var cell_id = this.cell_id(at);
+    var cell_id = this.cell_id(pos);
     return $("#" + cell_id);
 };
 
@@ -52,7 +72,7 @@ fansi.add_row = function(row_num) {
     var html = "";
     for (var col = 0; col < this.term.dim.col; col++) {
         var id = "r" + row_num + "c" + col;
-        var cell = "<span class='cell' id='" + id + "'>" + id + "</span>";
+        var cell = "<span class='cell' id='" + id + "'>" + '&nbsp;' + "</span>";
         html += cell;
     }
 
