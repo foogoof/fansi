@@ -1,5 +1,10 @@
 #terminal {
     font-family: monospace;
+    border: solid;
+}
+
+#terminal .content {
+    border: dashed;
 }
 
 #terminal th, #terminal td {
