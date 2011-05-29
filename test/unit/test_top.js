@@ -166,7 +166,4 @@ var batch = {
 
 suite.addBatch({'a thing': batch});
 
-
-
-
 suite.export(module);
