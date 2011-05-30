@@ -32,6 +32,11 @@ var read_all_codes = function(val) {
     } while (remainder);
 };
 
+// useful references:
+// http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+// http://en.wikipedia.org/wiki/ANSI_escape_code
+// http://ascii-table.com/ansi-escape-sequences.php
+
 var ansi_opcode_map = {
     'A' : { name: 'CursorUp', defaults: [ 1 ] },
     'B' : { name: 'CursorDown', defaults: [ 1 ] },
@@ -40,6 +45,10 @@ var ansi_opcode_map = {
     'E' : { name: 'CursorNext Line', defaults: [ 1 ] },
     'H' : { name: 'CursorPosition', defaults: [ 1, 1 ] },
     'J' : { name: 'EraseData', defaults: [ 0 ] },
+    'K' : { name: 'EraseInLine', defaults: [ 0 ] },
+    'L' : { name: 'InsertLine', defaults: [ 1 ] },
+    'M' : { name: 'DeleteLine', defaults: [ 1 ] },
+    'P' : { name: 'DeleteCharacters', defaults: [ 1 ] },
     'h' : { name: 'TerminalConfigEnable', defaults: [ undefined ] },
     'l' : { name: 'TerminalConfigDisable', defaults: [ undefined] },
     'm' : { name: 'SelectGraphicRendition', defaults: [ 0 ] },
@@ -72,13 +81,13 @@ var read_code = function(val) {
     var idx;
     var event;
     var code_len;
-    var digit, digits;
     var params, raw_params, act_params;
     var opcode, opcode_pos, opcode_attrs;
     var esq_code_data;
-
+    var orig_val = val;
     var next_escape = val.indexOf('\x1b');
     var remainder = '';
+    
 
     params = [];
 
@@ -102,7 +111,10 @@ var read_code = function(val) {
                 opcode = esq_code_data[opcode_pos];
                 opcode_attrs = ansi_opcode_map[opcode];
 
-                if (opcode_attrs) {
+                if (!opcode_attrs) {
+                    s.debug_inspect('WARNING: unsupported opcode: ' + opcode);
+                }
+                else {
                     raw_params = toolbox.extract_params(esq_code_data, 0, opcode_pos);
                     act_params = toolbox.apply_default_params(raw_params, opcode_attrs.defaults);
 
@@ -131,11 +143,11 @@ var read_code = function(val) {
     if (event) {
         // s.debug_inspect({emitting:event, with:params});
         this.emit(event, params);
-    } else if (remainder || code_len || digit) {
+    } else if (remainder || code_len) {
         s.debug_inspect({warning:'work left in progress',
                          remainder: remainder,
-                         digit: digit,
-                         code_len: code_len});
+                         code_len: code_len,
+                         orig_val: orig_val});
     }
 
     return remainder;
