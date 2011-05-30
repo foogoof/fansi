@@ -46,11 +46,29 @@ fansi.write_char = function(chr) {
     cell.append(chr);
 };
 
-fansi.advance_cursor = function(places) {
-    if (!places) {
-        places = 1;
+fansi.advance_cursor = function(cols) {
+    if (!cols) {
+        cols = 1;
     }
-    this.term.pos.col++;
+    
+    if (this.term.pos.col + cols < this.term.dim.col) {
+        this.term.pos.col += cols;
+    }
+};
+
+fansi.cursor_down = function(rows) {
+    if (!rows) {
+        rows = 1;
+    }
+    
+    if (this.term.pos.row + rows < this.term.dim.col) {
+        this.term.pos.row += rows;
+    }
+};
+
+fansi.cursor_position = function(coords) {
+    this.term.pos.row = coords.row;
+    this.term.pos.col = coords.col;
 };
 
 fansi.write_and_advance = function(chr) {
@@ -91,12 +109,47 @@ fansi.build_term = function() {
     }
 };
 
+fansi.write_text = function(text) {
+    var i;
+
+    for (i = 0; i < text.length; i++) {
+        this.write_and_advance(text[i]);
+    }
+};
+
 $(document).ready(function() {
     fansi.setup();
     fansi.build_term();
     socket.on('message',
               function(data) {
-                  console.log('lookit -- I got: ' + data.toString());
+                  var msg, txt, params, coord;
+
+                  txt = data.toString();
+                  console.log('lookit -- I got: %s', txt);
+
+                  msg = JSON.parse(txt);
+                  params = msg.data[0];
+
+                  // TODO let's not do this the worst possible way
+                  if (msg.event === 'raw_text') {
+                      fansi.write_text(params);
+                  } else if (msg.event === 'CursorForward') {
+                      fansi.advance_cursor(params);
+                  } else if (msg.event === 'CursorDown') {
+                      fansi.cursor_down(params);
+                  } else if (msg.event === 'CursorPosition') {
+                      coord = { row: 0, col: 0 };
+                      // server needs always send TWO values, ambiguous when only one provided
+                      // top left corner is 1, 1 over the wire, but map it to 0, 0 here
+                      if (msg.data.length !== 2) {
+                          throw new Error("crappy params!");
+                      }
+                      coord.row = msg.data[0] - 1;
+                      coord.col = msg.data[1] - 1;
+                      fansi.cursor_position(coord);
+                  } else {
+                      throw new Error("wtf is this opcode: " + msg.event);
+                  }
               });
     socket.on('disconnect', function() { alert('disconnected'); });
     socket.connect();
