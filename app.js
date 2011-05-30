@@ -6,6 +6,11 @@
 var express = require('express');
 
 var app = module.exports = express.createServer();
+var kid = require('child_process');
+var fansi = require('public/javascripts/fansi');
+var s = require('public/javascripts/s');
+var io = require('socket.io');
+var _ = require('underscore');
 
 // Configuration
 
@@ -32,7 +37,49 @@ app.get('/', function(req, res){
   res.render('terminal', {
     title: 'Express'
   });
+  
 });
+
+var run_top = function(client) {
+    var machine = new fansi.Machine();
+
+    _(['raw_text', 'cursor_position', 'cursor_down','cursor_forward']).each(
+        function(event) {
+            var fqe = fansi.event[event];
+            var context = {event:fqe};
+            
+            var trap = function(data) {
+                s.debug_inspect(JSON.stringify({event:this.event, data:data}));
+                client.send(JSON.stringify({event:this.event, data:data}));
+            };
+            
+            machine.on(fqe, _.bind(trap, context));
+        });
+
+    // '/usr/bin/top'
+    var proc = kid.spawn('zsh');
+    s.debug_inspect({proc:proc, pid:proc.pid});
+
+    proc.stdout.on('data',
+        function(data) {
+            s.debug_inspect({msg:'cool, data!', datums:data.toString(), proc:proc});
+            machine.read(data.toString());
+    });
+    proc.stderr.on('data',function(data) {s.debug_inspect({alas:data.toString()});});
+    proc.on('exit', function(code) { s.debug_inspect({horatio:code}); });
+
+    proc.stdin.write('env\n');
+    proc.stdin.write('/usr/bin/top\n');
+};
+
+var socket = io.listen(app, {transports:['websocket']});
+
+socket.on('connection',
+    function(client) {
+//        s.debug_inspect({connected:client});
+        run_top(client);
+    }
+);
 
 // Only listen on $ node app.js
 
