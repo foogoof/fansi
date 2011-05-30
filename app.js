@@ -50,7 +50,7 @@ var tail_f = function(client, file) {
             var context = {event:fqe};
             
             var trap = function(data) {
-                s.debug_inspect(JSON.stringify({event:this.event, data:data}));
+                //s.debug_inspect(JSON.stringify({event:this.event, data:data}));
                 client.send(JSON.stringify({event:this.event, data:data}));
             };
             
@@ -99,7 +99,7 @@ var run_top = function(client) {
     proc.stdin.write('/usr/bin/top\n');
 };
 
-var socket = io.listen(app, {transports:['websocket']});
+var socket = io.listen(app); // {transports:['websocket']});
 
 socket.on('connection',
     function(client) {

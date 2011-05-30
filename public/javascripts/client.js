@@ -133,7 +133,7 @@ $(document).ready(function() {
                   var msg, txt, params, coord;
 
                   txt = data.toString();
-                  console.log('lookit -- I got: %s', txt);
+                  //console.log('lookit -- I got: %s', txt);
 
                   msg = JSON.parse(txt);
                   params = msg.data[0];
