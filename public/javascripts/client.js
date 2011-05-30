@@ -84,6 +84,10 @@ fansi.get_current_cell = function() {
     return this.get_cell(this.term.pos);
 };
 
+fansi.carriage_return = function() {
+    this.term.pos.col = 0;
+};
+
 fansi.get_cell = function(pos) {
     var cell_id = this.cell_id(pos);
     return $("#" + cell_id);
@@ -113,7 +117,11 @@ fansi.write_text = function(text) {
     var i;
 
     for (i = 0; i < text.length; i++) {
-        this.write_and_advance(text[i]);
+        if ('\r' === text[i]) {
+            this.carriage_return();
+        } else {
+            this.write_and_advance(text[i]);
+        }
     }
 };
 
