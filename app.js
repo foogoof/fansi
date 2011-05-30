@@ -40,6 +40,33 @@ app.get('/', function(req, res){
   
 });
 
+var tail_f = function(client, file) {
+    var proc = kid.spawn('tail', ['-f', file]);
+    var machine = new fansi.Machine();
+
+    _(['raw_text', 'cursor_position', 'cursor_down','cursor_forward']).each(
+        function(event) {
+            var fqe = fansi.event[event];
+            var context = {event:fqe};
+            
+            var trap = function(data) {
+                s.debug_inspect(JSON.stringify({event:this.event, data:data}));
+                client.send(JSON.stringify({event:this.event, data:data}));
+            };
+            
+            machine.on(fqe, _.bind(trap, context));
+        });
+
+
+    proc.stdout.on('data',
+        function(data) {
+            machine.read(data.toString());
+        });
+
+    proc.stderr.on('data',function(data) {s.debug_inspect({alas:data.toString()});});
+    proc.on('exit', function(code) { s.debug_inspect({horatio:code}); });
+};
+
 var run_top = function(client) {
     var machine = new fansi.Machine();
 
@@ -76,8 +103,8 @@ var socket = io.listen(app, {transports:['websocket']});
 
 socket.on('connection',
     function(client) {
-//        s.debug_inspect({connected:client});
-        run_top(client);
+        // run_top(client, '/tmp/top.out');
+        tail_f(client, '/tmp/top.out');
     }
 );
 
