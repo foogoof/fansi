@@ -46,6 +46,23 @@ fansi.write_char = function(chr) {
     cell.append(chr);
 };
 
+fansi.delete_char = function() {
+    var cell = this.get_current_cell();
+    cell.empty();
+};
+
+fansi.delete_characters = function(nchars) {
+    var cur_col = this.term.pos.col;
+    var i;
+
+    for (i = 0; i < nchars; i++) {
+        this.delete_char();
+        this.advance_cursor();
+    }
+
+    this.term.pos.col = cur_col;
+};
+
 fansi.advance_cursor = function(cols) {
     if (!cols) {
         cols = 1;
@@ -133,7 +150,7 @@ $(document).ready(function() {
                   var msg, txt, params, coord;
 
                   txt = data.toString();
-                  //console.log('lookit -- I got: %s', txt);
+                  // console.log('lookit -- I got: %s', txt);
 
                   msg = JSON.parse(txt);
                   params = msg.data[0];
@@ -145,6 +162,8 @@ $(document).ready(function() {
                       fansi.advance_cursor(params);
                   } else if (msg.event === 'CursorDown') {
                       fansi.cursor_down(params);
+                  } else if (msg.event === 'DeleteCharacters') {
+                      fansi.delete_characters(params);
                   } else if (msg.event === 'CursorPosition') {
                       coord = { row: 0, col: 0 };
                       // server needs always send TWO values, ambiguous when only one provided
@@ -155,6 +174,8 @@ $(document).ready(function() {
                       coord.row = msg.data[0] - 1;
                       coord.col = msg.data[1] - 1;
                       fansi.cursor_position(coord);
+                  } else if (msg.event === 'EraseData' || msg.event === 'DeleteLine' || msg.event === 'InsertLine') {
+                      // GNDN
                   } else {
                       throw new Error("wtf is this opcode: " + msg.event);
                   }
