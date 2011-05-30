@@ -44,7 +44,7 @@ var tail_f = function(client, file) {
     var proc = kid.spawn('tail', ['-f', file]);
     var machine = new fansi.Machine();
 
-    _(['raw_text', 'cursor_position', 'cursor_down','cursor_forward']).each(
+    _(['insert_line', 'delete_line', 'erase_data', 'raw_text', 'cursor_position', 'cursor_down','cursor_forward', 'delete_characters']).each(
         function(event) {
             var fqe = fansi.event[event];
             var context = {event:fqe};
@@ -70,7 +70,7 @@ var tail_f = function(client, file) {
 var run_top = function(client) {
     var machine = new fansi.Machine();
 
-    _(['raw_text', 'cursor_position', 'cursor_down','cursor_forward']).each(
+    _(['insert_line', 'delete_line', 'raw_text', 'cursor_position', 'cursor_down','cursor_forward']).each(
         function(event) {
             var fqe = fansi.event[event];
             var context = {event:fqe};
