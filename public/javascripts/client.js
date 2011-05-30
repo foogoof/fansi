@@ -16,6 +16,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+var socket = new io.Socket();
+
 if (typeof fansi === 'undefined') {
     var fansi = {};
 }
@@ -92,4 +94,10 @@ fansi.build_term = function() {
 $(document).ready(function() {
     fansi.setup();
     fansi.build_term();
+    socket.on('message',
+              function(data) {
+                  console.log('lookit -- I got: ' + data.toString());
+              });
+    socket.on('disconnect', function() { alert('disconnected'); });
+    socket.connect();
 });
