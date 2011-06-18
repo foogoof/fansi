@@ -40,6 +40,27 @@ fansi.setup = function () {
     fansi.term = term;
 };
 
+fansi.erase = function(direction) {
+    var orig_col = this.term.pos.col;
+    var orig_row = this.term.pos.row;
+    var i;
+
+    if ('forward' === direction) {
+        this.delete_characters(this.term.dim.col - this.term.pos.col - 1);
+        this.term.pos.col = orig_col;
+    } else if ('backward' === direction) {
+        this.term.pos.col = 0;
+        this.delete_characters(orig_col);
+    } else {
+        this.term.pos.row = 0;
+        for (; this.term.pos.row < this.term.dim.row; this.term.pos.row += 1) {
+            this.term.pos.col = 0;
+            this.delete_characters(this.term.dim.col);
+        }
+        this.term.pos.row = this.term.pos.col = 0;
+    }
+};
+
 fansi.write_char = function(chr) {
     var cell = this.get_current_cell();
     cell.empty();
@@ -147,7 +168,7 @@ $(document).ready(function() {
     fansi.build_term();
     socket.on('message',
               function(data) {
-                  var msg, txt, params, coord;
+                  var msg, txt, params, coord, cmd;
 
                   txt = data.toString();
                   // console.log('lookit -- I got: %s', txt);
@@ -174,7 +195,17 @@ $(document).ready(function() {
                       coord.row = msg.data[0] - 1;
                       coord.col = msg.data[1] - 1;
                       fansi.cursor_position(coord);
-                  } else if (msg.event === 'EraseData' || msg.event === 'DeleteLine' || msg.event === 'InsertLine') {
+                  } else if (msg.event === 'EraseData') {
+                      if (params === 1) {
+                          cmd = 'backward';
+                      } else if (params === 2) {
+                          cmd = 'forward';
+                      } else {
+                          cmd = 'all';
+                      }
+                      fansi.erase(cmd);
+                  }
+                  else if (msg.event === 'DeleteLine' || msg.event === 'InsertLine') {
                       // GNDN
                   } else {
                       throw new Error("wtf is this opcode: " + msg.event);
