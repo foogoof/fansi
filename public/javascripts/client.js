@@ -207,6 +207,7 @@ $(document).ready(function() {
                   }
                   else if (msg.event === 'DeleteLine' || msg.event === 'InsertLine') {
                       // GNDN
+                      console.log("Not going to " + msg.event);
                   } else {
                       throw new Error("wtf is this opcode: " + msg.event);
                   }
